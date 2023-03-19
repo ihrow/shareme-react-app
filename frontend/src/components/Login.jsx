@@ -5,9 +5,12 @@ import shareVideo from '../assets/share.mp4'
 import logo from '../assets/logowhite.png'
 import jwt_decode from "jwt-decode";
 
+import { client} from "../client.js";
+
 
 
 const Login = () => {
+  const navigate = useNavigate();
 
   const responseGoogle = (response) => {
     const profileObj = jwt_decode(response.credential);
@@ -20,6 +23,11 @@ const Login = () => {
       userName: name,
       image: picture
     }
+
+    client.createIfNotExists(doc)
+      .then(() => {
+        navigate('/', { replace: true })
+      })
   }
 
 

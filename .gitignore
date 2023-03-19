@@ -2,4 +2,5 @@ node_modules
 .idea
 .sanity
 
-/frontend/.env.development
+.env
+/frontend/.env
