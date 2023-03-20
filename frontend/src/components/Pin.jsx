@@ -7,32 +7,42 @@ import {BsFillArrowUpRightCircleFill} from "react-icons/bs";
 import {client, urlFor} from "../client.js";
 import {fetchUser} from "../utils/fetchUser.js";
 
-const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
+const Pin = ({pin}) => {
   const [postHovered, setPostHovered] = useState(false);
+  const [savingPost, setSavingPost] = useState(false);
   const navigate = useNavigate();
 
   const user = fetchUser();
+  const {postedBy, image, _id, destination, save} = pin;
 
-  const alreadySaved = save?.filter((post) => post.postedBy._id === user.sub)?.length > 0;
+  let alreadySaved = pin?.save?.filter((s) => s?.postedBy?._id === user?.sub);
+  alreadySaved = alreadySaved?.length > 0;
+
+
   const savePin = (id) => {
-    if (!alreadySaved) {
-      client
-        .patch(id)
-        .setIfMissing({save: []})
-        .insert('after', 'save[-1]', [{
-          _key: uuidv4(),
-          userId: user?.sub,
-          postedBy: {
-            _type: 'postedBy',
-            _ref: user?.sub
-          }
-        }])
-        .commit()
-        .then(() => {
-          window.location.reload();
-        })
+    if (!savingPost) {
+      if (!alreadySaved) {
+        setSavingPost(true)
+        client
+          .patch(id)
+          .setIfMissing({save: []})
+          .insert('after', 'save[-1]', [{
+            _key: uuidv4(),
+            userId: user?.sub,
+            postedBy: {
+              _type: 'postedBy',
+              _ref: user?.sub
+            }
+          }])
+          .commit()
+          .then(() => {
+            window.location.reload();
+            setSavingPost(false);
+          })
+      }
     }
   }
+
   const deletePin = (id) => {
     client
       .delete(id)
@@ -85,7 +95,7 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
                     e.stopPropagation();
                     savePin(_id);
                   }}
-                >Save</button>
+                >{savingPost ? 'Saving...' : 'Save'}</button>
               )}
             </div>
             <div className="flex justify-between items-center gap-2 w-full">
@@ -96,7 +106,7 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
                   rel="noreferrer"
                   className="bg-white flex items-center gap-2 text-base font-bold p-2 pl-4 pr-4 rounded-full opacity-70 hover:opacity-100 hover:shadow-md"
                 >
-                  <BsFillArrowUpRightCircleFill />
+                  <BsFillArrowUpRightCircleFill/>
                   {destination.startsWith("http") ? destination.slice(8, 20) + "..." : destination.slice(0, 20) + "..."}
                 </a>
               )}
@@ -109,7 +119,7 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
                     e.stopPropagation();
                   }}
                 >
-                  <AiTwotoneDelete />
+                  <AiTwotoneDelete/>
                 </button>
               )}
             </div>
