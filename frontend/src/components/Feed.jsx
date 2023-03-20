@@ -15,15 +15,12 @@ const Feed = () => {
     setLoading(true);
     if(categoryId) {
       const query = searchQuery(categoryId)
-      console.log("we are here")
       client.fetch(query)
         .then((data) => {
           setPins(data)
           setLoading(false)
         })
-      console.log("we are there")
     } else {
-      console.log("we are here 2")
       client.fetch(feedQuery).then((data) => {
         setPins(data)
         setLoading(false)
