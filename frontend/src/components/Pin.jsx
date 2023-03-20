@@ -13,8 +13,6 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
 
   const user = fetchUser();
 
-  console.log(user)
-
   const alreadySaved = save?.filter((post) => post.postedBy._id === user.sub)?.length > 0;
   const savePin = (id) => {
     if (!alreadySaved) {
@@ -38,7 +36,9 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
   const deletePin = (id) => {
     client
       .delete(id)
-      .then(() => window.location.reload())
+      .then(() => {
+        window.location.reload();
+      })
   }
 
 
@@ -97,7 +97,7 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
                   className="bg-white flex items-center gap-2 text-base font-bold p-2 pl-4 pr-4 rounded-full opacity-70 hover:opacity-100 hover:shadow-md"
                 >
                   <BsFillArrowUpRightCircleFill />
-                  {destination.length > 20 ? destination.slice(8, 20) + "..." : destination.slice(8)}
+                  {destination.startsWith("http") ? destination.slice(8, 20) + "..." : destination.slice(0, 20) + "..."}
                 </a>
               )}
               {postedBy?._id === user.sub && (
@@ -105,8 +105,8 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
                   type="button"
                   className="bg-white p-2 rounded-full w-8 h-8 flex items-center justify-center text-dark opacity-75 hover:opacity-100 outline-none"
                   onClick={(e) => {
-                    e.stopPropagation();
                     deletePin(_id)
+                    e.stopPropagation();
                   }}
                 >
                   <AiTwotoneDelete />
@@ -116,7 +116,7 @@ const Pin = ({pin: {postedBy, image, _id, destination, save}}) => {
           </div>
         )}
       </div>
-      <Link to={`user-profile/${user?._id}`} className="flex gap-2 mt-2 items-center">
+      <Link to={`user-profile/${postedBy?._id}`} className="flex gap-2 mt-2 items-center">
         <img
           className="w-8 h-8 rounded-full object-cover"
           src={`${postedBy?.image}`}

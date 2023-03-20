@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {GoogleLogin, googleLogout} from "@react-oauth/google";
 import {useNavigate} from "react-router-dom";
 import shareVideo from '../assets/share.mp4'
